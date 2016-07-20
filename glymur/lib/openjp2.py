@@ -7,6 +7,10 @@ import re
 import sys
 import textwrap
 
+import pyximport
+pyximport.install()
+import memory_buffer
+
 from ..config import glymur_config
 
 OPENJP2, OPENJPEG = glymur_config()
@@ -1364,3 +1368,24 @@ def write_tile(codec, tile_index, data, data_size, stream):
 def set_error_message(msg):
     """The openjpeg error handler has recorded an error message."""
     ERROR_MSG_LST.append(msg)
+
+def stream_create_memory_stream(buffer):
+    """Wraps the new opj_stream_create_memory_stream function.
+
+    Sets the stream to be a memory buffer stream.  This function is only valid for the
+    2.1 version of the openjp2 library.
+
+    Parameters
+    ----------
+    buffer : array like
+        Specifies memory buffer, where the entire jp2 data is located.
+
+    Returns
+    -------
+    stream : stream_t
+        An OpenJPEG file stream.
+    """
+    stream = memory_buffer.opj_stream_create_memory_stream_python(buffer)
+    return stream
+
+
